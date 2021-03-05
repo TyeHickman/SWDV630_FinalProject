@@ -30,6 +30,8 @@ def main():
     store = sa.CreateStoreLocation()
     print("Created this store: ")
     print(store)
+    session.add(store)
+
 
 
 

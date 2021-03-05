@@ -1,14 +1,32 @@
 from abc import ABCMeta, abstractmethod
+from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy.ext.declarative import declared_attr
+from sqlalchemy.ext.declarative import has_inherited_table
+from base import Base
 
+class HasIdMixin(object):
+    @declared_attr.cascading
+    def id(cls):
+        if has_inherited_table(cls):
+            return Column(ForeignKey('MenuItem.itemId'), primary_key=True)
+        else:
+            return Column(Integer, primary_key=True)
 
-class MenuItem(metaclass = ABCMeta):
+class MenuItem(Base, metaclass = ABCMeta):
     def __init__(self, itemName, price, discount):
         self.itemName = itemName
         self.price = price
         self.discount = discount
 
-    def __str__(self):
+    def __repr__(self):
         return self.itemName + ": " + "${:3,.2f}".format(self.price)
+
+    __tablename__ = 'MenuItem'
+
+    itemId = Column(Integer, primary_key=True)
+    itemName = Column(String)
+    price = Column(Integer)
+    discount = Column(Integer)
 
     def ApplyDiscount(self,discount):
         if discount > 0:
@@ -22,7 +40,7 @@ class MenuItem(metaclass = ABCMeta):
         pass
 
 
-class EntreItem(MenuItem):
+class EntreItem(HasIdMixin, MenuItem):
     def __init__(self, entreType, size, *args, **kwargs):
         self.ENTRE_TYPES = ("Pizza", "Pasta", "Chicken")
         self.SIZES = ("Small", "Medium", "Large", "Chicago")
@@ -37,6 +55,10 @@ class EntreItem(MenuItem):
         self.modifications = []
         super(EntreItem, self).__init__(*args, **kwargs)
 
+    __tablename__ = 'EntreItem'
+    eType = Column(String)
+    eSize = Column(String)
+
     def ModifyEntre(self, mod):
         if mod in self.modifications:
             return
@@ -47,13 +69,13 @@ class EntreItem(MenuItem):
         os = self.SIZES.index(self.size)
         self.size = self.SIZES[os + 1]
 
-    def __str__(self):
-        return  self.size + " " + self.entreType + ": " + super().__str__()
+    def __repr__(self):
+        return  self.size + " " + self.entreType + ": " + super().__repr__()
 
     def GetItemType():
         return "Entre"
 
-class SideItem(MenuItem):
+class SideItem(HasIdMixin, MenuItem):
     def __init__(self, sideType, sideQuantity, *args, **kwargs):
         self.SIDE_MENU = ("Bread", "Side Salad", "Dipping Sauce")
         if sideType not in self.SIDE_MENU:
@@ -67,6 +89,10 @@ class SideItem(MenuItem):
             self.sideQuantity = sideQuantity
         super(SideItem, self).__init__(*args, **kwargs)
 
+    __tablename__ = 'SideItem'
+    sType = Column(String)
+    sQuantity = Column(Integer)
+
     def doubleOrder(self):
         self.sideQuantity = self.sideQuantity *2
     
@@ -78,14 +104,14 @@ class SideItem(MenuItem):
                 print("Selection Unavailable, Please try again.")
                 choice = str(input("Choose Salad Type: Ceasar, Cobb: ")).lower().strip()
             self.sideType = choice
-    def __str__(self):
-        return self.sideType +": " + super().__str__() 
+    def __repr__(self):
+        return self.sideType +": " + super().__repr__() 
 
     def GetItemType():
         return "Side"
 
 
-class DessertItem(MenuItem):
+class DessertItem(HasIdMixin, MenuItem):
     def __init__(self, dessertType, *args, **kwargs):
         self.DESSERT_OPTIONS = ("Cake", "Pie", "Churros")
         if dessertType not in self.DESSERT_OPTIONS:
@@ -93,6 +119,9 @@ class DessertItem(MenuItem):
         else:
             self.dessertType = dessertType
         super(DessertItem, self).__init__(*args, **kwargs)
+
+    __tablename__ = 'DessertItem'
+    dType = Column(String)
 
     def sliceCake(self):
         if self.dessertType == "Cake":
@@ -104,8 +133,8 @@ class DessertItem(MenuItem):
             else:
                 self.dessertType = "Unsliced Cake"
 
-    def __str__(self):
-        return self.dessertType + ": " + super().__str__()
+    def __repr__(self):
+        return self.dessertType + ": " + super().__repr__()
     
     def GetItemType():
         return "Dessert"

@@ -1,5 +1,5 @@
 # from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
+# from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String
 from StoreLocation import StoreLocation
 from base import Base
@@ -21,7 +21,6 @@ class SystemAdministrator(Base):
     def __repr__(self):
         return "UserName: {0} \nEmail: {1}".format(self.userName, self.email)
 
-    # TODO: create store location method
     def CreateStoreLocation(self):
         createdBy = self.email
         sName = input(str("Store Name? "))
