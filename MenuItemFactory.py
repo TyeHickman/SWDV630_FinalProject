@@ -12,7 +12,7 @@ class HasIdMixin(object):
         else:
             return Column(Integer, primary_key=True)
 
-class MenuItem(Base, metaclass = ABCMeta):
+class MenuItem(Base, dict):
     def __init__(self, itemName, price, discount):
         self.itemName = itemName
         self.price = price
@@ -35,29 +35,23 @@ class MenuItem(Base, metaclass = ABCMeta):
         else:
             self.price = self.price
 
-    @abstractmethod
-    def GetItemType():
-        pass
+    # @abstractmethod
+    # def GetItemType():
+    #     pass
 
 
 class EntreItem(HasIdMixin, MenuItem):
-    def __init__(self, entreType, size, *args, **kwargs):
+    def __init__(self, entreType, *args, **kwargs):
         self.ENTRE_TYPES = ("Pizza", "Pasta", "Chicken")
-        self.SIZES = ("Small", "Medium", "Large", "Chicago")
         if entreType not in self.ENTRE_TYPES:
             self.entreType = "Pizza"
         else:
             self.entreType = entreType
-        if size not in self.SIZES:
-            self.size = "Small"
-        else:
-            self.size = size
         self.modifications = []
         super(EntreItem, self).__init__(*args, **kwargs)
 
     __tablename__ = 'EntreItem'
     eType = Column(String)
-    eSize = Column(String)
 
     def ModifyEntre(self, mod):
         if mod in self.modifications:
@@ -65,45 +59,24 @@ class EntreItem(HasIdMixin, MenuItem):
         else:
             self.modifications.append(mod)
 
-    def UpSize(self):
-        os = self.SIZES.index(self.size)
-        self.size = self.SIZES[os + 1]
-
     def __repr__(self):
-        return  self.size + " " + self.entreType + ": " + super().__repr__()
+        return  self.entreType + ": " + super().__repr__()
 
     def GetItemType():
         return "Entre"
 
 class SideItem(HasIdMixin, MenuItem):
-    def __init__(self, sideType, sideQuantity, *args, **kwargs):
-        self.SIDE_MENU = ("Bread", "Side Salad", "Dipping Sauce")
+    def __init__(self, sideType, *args, **kwargs):
+        self.SIDE_MENU = ("Bread Sticks", "Side Salad", "Dipping Sauce")
         if sideType not in self.SIDE_MENU:
             self.sideType = "none"
         else:
             self.sideType = sideType
-        
-        if self.sideType == "none":
-            self.sideQuantity = 0
-        else:
-            self.sideQuantity = sideQuantity
         super(SideItem, self).__init__(*args, **kwargs)
 
     __tablename__ = 'SideItem'
     sType = Column(String)
-    sQuantity = Column(Integer)
-
-    def doubleOrder(self):
-        self.sideQuantity = self.sideQuantity *2
     
-    def chooseSalad(self):
-        SALADS = ("ceasar", "cobb")
-        if self.sideType == "Side Salad" or self.sideType == self.SIDE_MENU[1]:
-            choice = str(input("Choose Salad Type: Ceasar, Cobb: ")).lower().strip()
-            while choice not in SALADS:
-                print("Selection Unavailable, Please try again.")
-                choice = str(input("Choose Salad Type: Ceasar, Cobb: ")).lower().strip()
-            self.sideType = choice
     def __repr__(self):
         return self.sideType +": " + super().__repr__() 
 
@@ -111,7 +84,7 @@ class SideItem(HasIdMixin, MenuItem):
         return "Side"
 
 
-class DessertItem(HasIdMixin, MenuItem):
+class DessertItem(HasIdMixin, MenuItem, dict):
     def __init__(self, dessertType, *args, **kwargs):
         self.DESSERT_OPTIONS = ("Cake", "Pie", "Churros")
         if dessertType not in self.DESSERT_OPTIONS:
@@ -150,3 +123,5 @@ class MenuItemFactory(object):
             return SideItem(*args)
         elif itemType == 'dessert':
             return DessertItem(*args)
+
+    

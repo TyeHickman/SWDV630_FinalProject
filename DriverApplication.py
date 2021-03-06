@@ -19,7 +19,7 @@ def main():
     print("Adding System Administrator...")
     SysAdm = SystemAdministrator("admin01", "super@user.com", "123456")
     
-    Session = sessionmaker(bind=engine)
+    Session = sessionmaker(bind=engine, autocommit=True)
     session = Session()
 
     session.add(SysAdm)
@@ -31,6 +31,8 @@ def main():
     print("Created this store: ")
     print(store)
     session.add(store)
+    s1 = session.query(StoreLocation).first()
+    print(s1)
 
 
 

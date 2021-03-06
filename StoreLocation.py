@@ -1,8 +1,8 @@
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, PickleType
 # from sqlalchemy.orm import sessionmaker
 
-Base = declarative_base()
+from base import Base
 
 class StoreLocation(Base):
 
@@ -24,6 +24,6 @@ class StoreLocation(Base):
     storeCode = Column(String)
     storeAddress = Column(String)
     # TODO: store an array in the menu column
-    storeMenu = Column(String)
+    storeMenu = Column(PickleType)
     createdBy = Column(String)
 
