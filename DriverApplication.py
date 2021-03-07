@@ -5,6 +5,8 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.session import Session
 from SystemAdministrator import SystemAdministrator
 from StoreLocation import StoreLocation
+from UserProfile import UserProfile
+from MemberUser import MemberUser
 
 import base
 
@@ -35,14 +37,26 @@ def main():
     session.add(store)
     s1 = session.query(StoreLocation).first()
 
-    print("Testing Order process...")
+
+    print("\nCreating Test User...")
+    testUser = UserProfile("test@user.com", "1 Test Road")
+    session.add(testUser)
+    tUser = session.query(UserProfile).first()
+    print(tUser)
+
+    print("\nCreating Test User as a Member User")
+    testMember = MemberUser(tUser, 'testMember', '123456')
+    session.add(testMember)
+    tMember = session.query(MemberUser).first()
+    print(tMember)
+
+    print("\nTesting Order process...")
     # testOrder = s1.createOrder()
     # Created a test order for this one as well.
-    testOrder = s1.createTestOrder()
+    testOrder = s1.createTestOrder(tMember.userInfo.userId)
     session.add(testOrder)
     tOrder = session.query(OrderTicket).first()
     print(tOrder)
-
 
 
 main()

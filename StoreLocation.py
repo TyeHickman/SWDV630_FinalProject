@@ -1,6 +1,7 @@
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy import Column, Integer, String, PickleType
+from sqlalchemy.sql.functions import user
 from OrderTicket import OrderTicket
 # from sqlalchemy.orm import sessionmaker
 
@@ -40,7 +41,7 @@ class StoreLocation(Base):
                     print('\t' * (indent+1) + str(item))
                     
 
-    def createOrder(self):
+    def createOrder(self, userId):
         orderList = []
         print('Creating Order...')
         self.prettyPrint()
@@ -61,11 +62,11 @@ class StoreLocation(Base):
                 for item in self.storeMenu['Desserts']:
                     if num == item.itemNumber:
                         orderList.append(item)
-        orderObj = OrderTicket(orderList, self.storeCode)
+        orderObj = OrderTicket(orderList, self.storeCode, self.userId, userId)
         # print(orderObj)
         return orderObj
     
-    def createTestOrder(self):
+    def createTestOrder(self, userId):
         orderList = []
         orderNumList = ["E1","S2","D3"]
         for num in orderNumList:
@@ -82,6 +83,6 @@ class StoreLocation(Base):
                 for item in self.storeMenu['Desserts']:
                     if num == item.itemNumber:
                         orderList.append(item)
-        orderObj = OrderTicket(orderList, self.storeCode)
+        orderObj = OrderTicket(orderList, self.storeCode, userId)
         # print(orderObj)
         return orderObj
