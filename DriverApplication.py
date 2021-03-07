@@ -32,7 +32,9 @@ def main():
     print(store)
     session.add(store)
     s1 = session.query(StoreLocation).first()
-    print(s1)
+
+    print("Testing Order process...")
+    s1.createOrder()
 
 
 

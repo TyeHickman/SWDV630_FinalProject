@@ -13,16 +13,8 @@ class OrderFacade:
         for i in items:
             # set the price for small, medium, large entres
             if i.itemSubType == 'Pizza' or i.itemSubType == 'Pasta' or i.itemSubType == 'Chicken':
-                if i.itemSize == 'Chicago':
-                    i.price = 25
-                elif i.itemSize == 'Large':
-                    i.price = 20
-                elif i.itemSize == 'Medium':
-                    i.price = 15
-                elif i.itemSize == 'Small':
-                    i.price = 10
                 # Create the entre based on the information passed to OrderItem
-                entre = factory.create("Entre", i.itemSubType, i.itemSize, i.itemName, i.price, 0)
+                entre = factory.create("Entre", i.itemSubType, i.itemName, i.price, 0)
                 self.addToOrder(entre)
             # Handle the side item types:
             elif i.itemSubType == 'Bread' or i.itemSubType == 'Side Salad' or i.itemSubType == 'Dipping Sauce':

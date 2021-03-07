@@ -1,5 +1,6 @@
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String, PickleType
+from OrderFacade import OrderFacade
 # from sqlalchemy.orm import sessionmaker
 
 from base import Base
@@ -27,3 +28,40 @@ class StoreLocation(Base):
     storeMenu = Column(PickleType)
     createdBy = Column(String)
 
+    def prettyPrint(self, indent=0):
+        for key, value in self.storeMenu.items():
+            print('\t' * indent + str(key))
+            if isinstance(value, dict):
+                self.prettyPrint(value, indent+1)
+            else:
+                for item in value:
+                    print('\t' * (indent+1) + str(item))
+                    
+
+    def createOrder(self):
+        orderList = []
+        print('Creating Order...')
+        self.prettyPrint()
+        orderNumsStr = input(str("Pick the item numbers for your order (ex: E1, S2, D3): ")).upper().strip()
+        orderNumList = orderNumsStr.split(',')
+        print(orderNumList)
+        for num in orderNumList:
+            if num[0] == 'E':
+                for item in self.storeMenu['Entres']:
+                    if num == item.itemNumber:
+                        print(item)
+                        orderList.append(item)
+            elif num[0] == 'S':
+                for item in self.storeMenu['Sides']:
+                    if num == item.itemNumber:
+                        print(item)
+                        orderList.append(item)
+            elif num[0] == 'D':
+                for item in self.storeMenu['Desserts']:
+                    if num == item.itemNumber:
+                        print(item)
+                        orderList.append(item)
+        print("This is the order: ")
+        for oi in orderList:
+            print(oi)
+            # TODO: finish this method

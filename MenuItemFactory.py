@@ -13,13 +13,14 @@ class HasIdMixin(object):
             return Column(Integer, primary_key=True)
 
 class MenuItem(Base, dict):
-    def __init__(self, itemName, price, discount):
+    def __init__(self, itemNumber, itemName, price, discount):
+        self.itemNumber = itemNumber.upper().strip()
         self.itemName = itemName
         self.price = price
         self.discount = discount
 
     def __repr__(self):
-        return self.itemName + ": " + "${:3,.2f}".format(self.price)
+        return "{0}: ${1:3,.2f}".format(self.itemName,self.price)
 
     __tablename__ = 'MenuItem'
 
@@ -40,7 +41,7 @@ class MenuItem(Base, dict):
     #     pass
 
 
-class EntreItem(HasIdMixin, MenuItem):
+class EntreItem(HasIdMixin, MenuItem, dict):
     def __init__(self, entreType, *args, **kwargs):
         self.ENTRE_TYPES = ("Pizza", "Pasta", "Chicken")
         if entreType not in self.ENTRE_TYPES:
@@ -60,12 +61,12 @@ class EntreItem(HasIdMixin, MenuItem):
             self.modifications.append(mod)
 
     def __repr__(self):
-        return  self.entreType + ": " + super().__repr__()
+        return  "{0}: {1}: ".format(self.itemNumber, self.entreType) + super().__repr__()
 
     def GetItemType():
         return "Entre"
 
-class SideItem(HasIdMixin, MenuItem):
+class SideItem(HasIdMixin, MenuItem, dict):
     def __init__(self, sideType, *args, **kwargs):
         self.SIDE_MENU = ("Bread Sticks", "Side Salad", "Dipping Sauce")
         if sideType not in self.SIDE_MENU:
@@ -78,7 +79,7 @@ class SideItem(HasIdMixin, MenuItem):
     sType = Column(String)
     
     def __repr__(self):
-        return self.sideType +": " + super().__repr__() 
+        return "{0}: {1}: ".format(self.itemNumber, self.sideType) + super().__repr__() 
 
     def GetItemType():
         return "Side"
@@ -107,7 +108,7 @@ class DessertItem(HasIdMixin, MenuItem, dict):
                 self.dessertType = "Unsliced Cake"
 
     def __repr__(self):
-        return self.dessertType + ": " + super().__repr__()
+        return "{0}: {1}: ".format(self.itemNumber, self.dessertType) + super().__repr__()
     
     def GetItemType():
         return "Dessert"
