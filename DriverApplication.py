@@ -1,8 +1,8 @@
+from OrderTicket import OrderTicket
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative.api import synonym_for
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.session import Session
-from OrderFacade import OrderFacade, OrderItem
 from SystemAdministrator import SystemAdministrator
 from StoreLocation import StoreLocation
 
@@ -27,15 +27,21 @@ def main():
     print(sa)
     print("Administrator created...")
     print("Starting Store Location Creation Process...")
-    store = sa.CreateStoreLocation()
+    # store = sa.CreateStoreLocation()
+    # Got tired of typing this so I created a test method...
+    store = sa.CreateTestLocation()
     print("Created this store: ")
     print(store)
     session.add(store)
     s1 = session.query(StoreLocation).first()
 
     print("Testing Order process...")
-    s1.createOrder()
-
+    # testOrder = s1.createOrder()
+    # Created a test order for this one as well.
+    testOrder = s1.createTestOrder()
+    session.add(testOrder)
+    tOrder = session.query(OrderTicket).first()
+    print(tOrder)
 
 
 

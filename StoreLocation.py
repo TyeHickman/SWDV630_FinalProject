@@ -1,6 +1,7 @@
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import relationship
 from sqlalchemy import Column, Integer, String, PickleType
-from OrderFacade import OrderFacade
+from OrderTicket import OrderTicket
 # from sqlalchemy.orm import sessionmaker
 
 from base import Base
@@ -22,11 +23,12 @@ class StoreLocation(Base):
 
     storeID = Column(Integer, primary_key=True)
     storeName = Column(String)
-    storeCode = Column(String)
+    storeCode = Column(String, unique=True)
     storeAddress = Column(String)
     # TODO: store an array in the menu column
     storeMenu = Column(PickleType)
     createdBy = Column(String)
+    orders = relationship(OrderTicket)
 
     def prettyPrint(self, indent=0):
         for key, value in self.storeMenu.items():
@@ -42,26 +44,44 @@ class StoreLocation(Base):
         orderList = []
         print('Creating Order...')
         self.prettyPrint()
-        orderNumsStr = input(str("Pick the item numbers for your order (ex: E1, S2, D3): ")).upper().strip()
+        orderNumsStr = input(str("Pick the item numbers for your order (ex: E1,S2,D3): ")).upper().strip()
         orderNumList = orderNumsStr.split(',')
-        print(orderNumList)
+        # Would have been a great place for a switch statement...
         for num in orderNumList:
+            num = num.strip()
             if num[0] == 'E':
                 for item in self.storeMenu['Entres']:
                     if num == item.itemNumber:
-                        print(item)
                         orderList.append(item)
             elif num[0] == 'S':
                 for item in self.storeMenu['Sides']:
                     if num == item.itemNumber:
-                        print(item)
                         orderList.append(item)
             elif num[0] == 'D':
                 for item in self.storeMenu['Desserts']:
                     if num == item.itemNumber:
-                        print(item)
                         orderList.append(item)
-        print("This is the order: ")
-        for oi in orderList:
-            print(oi)
-            # TODO: finish this method
+        orderObj = OrderTicket(orderList, self.storeCode)
+        # print(orderObj)
+        return orderObj
+    
+    def createTestOrder(self):
+        orderList = []
+        orderNumList = ["E1","S2","D3"]
+        for num in orderNumList:
+            num = num.strip()
+            if num[0] == 'E':
+                for item in self.storeMenu['Entres']:
+                    if num == item.itemNumber:
+                        orderList.append(item)
+            elif num[0] == 'S':
+                for item in self.storeMenu['Sides']:
+                    if num == item.itemNumber:
+                        orderList.append(item)
+            elif num[0] == 'D':
+                for item in self.storeMenu['Desserts']:
+                    if num == item.itemNumber:
+                        orderList.append(item)
+        orderObj = OrderTicket(orderList, self.storeCode)
+        # print(orderObj)
+        return orderObj
